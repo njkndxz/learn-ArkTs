@@ -1,0 +1,50 @@
+{
+  "module": {
+    "name": "twoEntry",
+    "type": "entry",
+    "description": "$string:module_desc",
+    "mainElement": "TwoEntryAbility",
+    "deviceTypes": [
+      "car"
+    ],
+    "deliveryWithInstall": true,
+    "installationFree": false,
+    "pages": "$profile:main_pages",
+    "abilities": [
+      {
+        "name": "TwoEntryAbility",
+        "srcEntry": "./ets/twoentryability/TwoEntryAbility.ets",
+        "description": "$string:TwoEntryAbility_desc",
+        "icon": "$media:layered_image",
+        "label": "$string:TwoEntryAbility_label",
+        "startWindowIcon": "$media:startIcon",
+        "startWindowBackground": "$color:start_window_background",
+        "exported": true,
+        "skills": [
+          {
+            "entities": [
+              "entity.system.home"
+            ],
+            "actions": [
+              "action.system.home"
+            ]
+          }
+        ]
+      }
+    ],
+    "extensionAbilities": [
+      {
+        "name": "TwoEntryBackupAbility",
+        "srcEntry": "./ets/twoentrybackupability/TwoEntryBackupAbility.ets",
+        "type": "backup",
+        "exported": false,
+        "metadata": [
+          {
+            "name": "ohos.extension.backup",
+            "resource": "$profile:backup_config"
+          }
+        ],
+      }
+    ]
+  }
+}
