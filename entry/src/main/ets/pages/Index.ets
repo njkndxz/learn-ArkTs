@@ -1,101 +1,109 @@
-
-import { router, window } from '@kit.ArkUI'
-import { common, Want } from '@kit.AbilityKit'
-import { BusinessError } from '@kit.BasicServicesKit'
-
-
-// 从一个Ability中唤起另一个Ability，一个应用下两个窗口
-/*
- *1. 准备want作为启动参数UIAbility
- * 2. 利用context startAbility 调起UIAbility
- * */
+import router from '@ohos.router'
 @Entry
 @Component
-struct Index {
+struct AnimationPage {
+  // 小鱼坐标
+  @State fishX: number = 200
+  @State fishY: number = 180
+  // 小鱼角度
+  @State angle: number = 0
+  // 小鱼图片
+  @State src: Resource = $r('app.media.fish')
 
-  windowClass?: window.Window
-  // 如何解决DevEco预览器上下白色间距问题及实现全屏沉浸式体验, 可以通过调用鸿蒙的API来修复这个问题
-  // this.windowClass.setWindowLayoutFullScreen(true) 这段代码会在页面加载时获取最后一个窗口并将其设为全屏模式，从而消除上下白色间距。
-  async setFullScreen(flag: boolean) {
-    if (!this.windowClass) {
-      this.windowClass = await window.getLastWindow(getContext(this))
-    }
-    this.windowClass.setWindowLayoutFullScreen(flag)
-  }
-
-  onPageShow(): void {
-    this.setFullScreen(true)
-  }
-
-  onPageHide(): void {
-    this.setFullScreen(false)
-  }
-  // 组件只能用aboutToAppear和aboutToDisappear，页面还可以使用onPageShow和onPageHide
-  // 组件被创建时
-  aboutToAppear(): void {
-  }
-
-  // 组件被销毁时
-  aboutToDisappear(): void {
-  }
-
-  // 对返回键进行监听
-  onBackPress(): boolean | void {
-    router.back()
-    return true
-  }
-
-  //获取上下文对象
-  context = getContext(this) as common.UIAbilityContext
+  // 是否开始游戏
+  @State isBegin: boolean = false
 
   build() {
-    Column({ space: 10 }) {
-      Button('唤起另一个Ability')
-        .onClick(() => {
-          // 1.准备want(参数信息)
-          let wantInfo: Want = {
-            deviceId: '', //空表示本设备
-            bundleName: '', //包名
-            moduleName: 'entry', //模块名
-            abilityName: 'twoEntryAbility',
-            parameters: {
-              info: '来着entryAbility'
-            }
-          }
-          // 2. 利用context startAbility 调起UIAbility
-          //返回一个promise对象
-          this.context.startAbility(wantInfo)
-            .then(() => {
-              console.log('启动成功');
-            })
-            .catch((e: BusinessError) => {
-              console.log('启动失败', e);
-            })
-        })
-        Button('跨模块唤起另一个Ability')
+    Row() {
+      Stack(){
+        // 返回按钮
+        Button('返回')
+          .position({x:0, y: 0})
+          .backgroundColor('#20101010')
           .onClick(() => {
-            // 1.准备want(参数信息)
-            let wantInfo: Want = {
-              deviceId: '', //空表示本设备
-              bundleName: "com.example.myapplication", //包名
-              moduleName: 'twoEntry', //模块名
-              abilityName: 'entryAbility',
-              parameters: {
-                info: '来自模块entry的entryAbility'
-              }
-            }
-            // 2. 利用context startAbility 调起UIAbility
-            //返回一个promise对象
-            this.context.startAbility(wantInfo)
-              .then(() => {
-                console.log('启动成功');
-              })
-              .catch((e: BusinessError) => {
-                console.log('启动失败', e);
-              })
+            // 返回上一页
+            router.back()
           })
+
+        if(!this.isBegin){
+          // 开始按钮
+          Button('开始游戏')
+            .onClick(() => {
+              animateTo(
+                {duration: 1000},
+                () => {
+                  // 点击后显示小鱼
+                  this.isBegin = true
+                }
+              )
+            })
+        }else{
+          // 小鱼图片
+          Image(this.src)
+            .position({x: this.fishX - 20, y: this.fishY - 20})
+            .rotate({angle:this.angle, centerX: '50%', centerY: '50%'})
+            .width(40)
+            .height(40)
+              //.animation({duration: 500, curve: Curve.Smooth})
+            .transition({
+              type: TransitionType.Insert,
+              opacity: 0,
+              translate: {x: -250}
+            })
+        }
+        // 操作按钮
+        Row(){
+          Button('←').backgroundColor('#20101010')
+            .onClick(() => {
+              animateTo(
+                {duration: 500},
+                () => {
+                  this.fishX -= 20
+                  this.src = $r('app.media.fish_rev')
+                }
+              )
+            })
+          Column({space: 40}){
+            Button('↑').backgroundColor('#20101010')
+              .onClick(() => {
+                animateTo(
+                  {duration: 500},
+                  () => {
+                    this.fishY -= 20
+                  }
+                )
+              })
+            Button('↓').backgroundColor('#20101010')
+              .onClick(() => {
+                animateTo(
+                  {duration: 500},
+                  () => {
+                    this.fishY += 20
+                  }
+                )
+              })
+          }
+          Button('→').backgroundColor('#20101010')
+            .onClick(() => {
+              animateTo(
+                {duration: 500},
+                () => {
+                  this.fishX += 20
+                  this.src = $r('app.media.fish')
+                }
+              )
+            })
+        }
+        .height(240)
+        .width(240)
+        .justifyContent(FlexAlign.Center)
+        .position({x:0,y:120})
+      }
+      .height('100%').width('100%')
     }
     .height('100%')
     .width('100%')
+    .backgroundImage($r('app.media.sea'))
+    .backgroundImageSize({height: '105%', width: '100%'})
   }
 }
