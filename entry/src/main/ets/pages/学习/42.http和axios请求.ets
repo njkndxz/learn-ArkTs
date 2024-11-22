@@ -1,5 +1,5 @@
-import ShopModal from '../model/ShopModal'
-import ShopInfo from '../viewModel/ShopInfo'
+import ShopModal from '../../model/ShopModal'
+import ShopInfo from '../../viewModel/ShopInfo'
 
 
 @Entry
