@@ -1,4 +1,6 @@
 import router from '@ohos.router'
+
+// 插值曲线动画
 import curves from '@ohos.curves'
 
 @Entry
@@ -125,7 +127,6 @@ struct AnimationPage {
           this.fishY += this.speed * this.sin
         }, 40)
         break
-
       case TouchType.Move:
         // 1.获取手指位置坐标
         let x = event.touches[0].x

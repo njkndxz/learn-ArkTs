@@ -1,12 +1,16 @@
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
+import PreferencesUtil from '../common/utils/PreferencesUtil'
+
 
 export default class EntryAbility extends UIAbility {
 
   //当Ability创建时
-  onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+  async onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): Promise<void> {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
+    // 加载Preferences
+    await PreferencesUtil.loadPreference(this.context, 'myapp')
   }
   //当Ability销毁时
   onDestroy(): void {

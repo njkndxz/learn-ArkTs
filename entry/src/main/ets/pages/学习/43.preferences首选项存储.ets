@@ -1,4 +1,4 @@
-import PreferencesUtil from '../common/utils/PreferencesUtil'
+import PreferencesUtil from '../../common/utils/PreferencesUtil'
 
 
 
@@ -25,20 +25,20 @@ struct Index {
 
   build() {
     Column({ space: 10 }) {
-        Text('哈哈哈哈')
-          .fontSize(this.fontSize)
-        Slider({
-          value: this.outSetValueOne,
-          min: 5,
-          max: 100,
-          style: SliderStyle.OutSet
+      Text('哈哈哈哈')
+        .fontSize(this.fontSize)
+      Slider({
+        value: this.outSetValueOne,
+        min: 5,
+        max: 100,
+        style: SliderStyle.OutSet
+      })
+        .onChange((value: number, mode: SliderChangeMode) => {
+          this.outSetValueOne = value
+          this.fontSize = value
+          PreferencesUtil.putPreferenceValue('myapp', 'IndexFontSize', value)
+          console.info('value:' + value + 'mode:' + mode.toString())
         })
-          .onChange((value: number, mode: SliderChangeMode) => {
-            this.outSetValueOne = value
-            this.fontSize = value
-            PreferencesUtil.putPreferenceValue('myapp', 'IndexFontSize', value)
-            console.info('value:' + value + 'mode:' + mode.toString())
-          })
 
     }
     .width('100%')
