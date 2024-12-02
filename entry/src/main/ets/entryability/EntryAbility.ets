@@ -2,7 +2,8 @@ import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import PreferencesUtil from '../common/utils/PreferencesUtil'
-
+import { RdbStoreUtil } from '../common/utils/RdbStoreUtil'
+import TaskModel from '../model/TaskModel'
 
 export default class EntryAbility extends UIAbility {
 
@@ -10,7 +11,18 @@ export default class EntryAbility extends UIAbility {
   async onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): Promise<void> {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
     // 加载Preferences
-    await PreferencesUtil.loadPreference(this.context, 'myapp')
+    // await PreferencesUtil.loadPreference(this.context, 'myapp')
+
+    // 初始化数据库，创建表
+    /*const sql = `CREATE TABLE IF NOT EXISTS TASK (
+                  ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                  NAME TEXT NOT NULL,
+                  FINISHED bit
+                 )`
+    const rdbStoreUtil = new RdbStoreUtil('MyApp.db', sql)
+    rdbStoreUtil.initDB(this.context)*/
+    // 初始化数据库，创建表
+    TaskModel.initTaskDB(this.context)
   }
   //当Ability销毁时
   onDestroy(): void {
