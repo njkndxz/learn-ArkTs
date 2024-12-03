@@ -1,5 +1,5 @@
 import { relationalStore, ValuesBucket } from '@kit.ArkData'
-import { TaskInfoType } from '../viewModel/TaskInfo';
+import { TaskInfo, TaskInfoType } from '../viewModel/TaskInfo';
 
 
 interface Config {
@@ -44,26 +44,29 @@ class TaskModel {
    * 查询任务列表
    */
   async getTaskList(){
+    if(!this.rdbStore) {
+      return
+    }
     // 1.构建查询条件
     const predicates = new relationalStore.RdbPredicates(this.tableName)
     // 2.查询
-    const result = await this.rdbStore?.query(predicates, ['ID', 'NAME', 'FINISHED'])
+    const result = await this.rdbStore.query(predicates, ['ID', 'NAME', 'FINISHED'])
     // 3.解析查询结果
     // 3.1.定义一个数组，组装最终的查询结果
-    const tasks: TaskInfoType[] = []
+    const tasks: TaskInfo[] = []
     // 3.2.遍历封装
-    while(!result?.isAtLastRow){
+    while(!result.isAtLastRow){
       // 3.3.指针移动到下一行
-      result?.goToNextRow()
+      result.goToNextRow()
       // 3.4.获取数据
-      const  id = result?.getLong(result.getColumnIndex('ID'))
-      const name = result?.getString(result.getColumnIndex('NAME'))
-      const finished = result?.getLong(result.getColumnIndex('FINISHED'))
-      const data: TaskInfoType = { id: id, name: name, finished: !!finished }
+      const  id = result.getLong(result.getColumnIndex('ID')) || 0
+      const name = result.getString(result.getColumnIndex('NAME')) || 'task0'
+      const finished = result.getLong(result.getColumnIndex('FINISHED'))
+      const data: TaskInfo = new TaskInfo(id, name, !!finished)
       // 3.5.封装到数组
       tasks.push(data)
     }
-    console.log('testTag', '查询到数据：', JSON.stringify(tasks))
+    // console.log('testTag', '查询到数据：', JSON.stringify(tasks))
     return tasks
   }
 
@@ -73,8 +76,12 @@ class TaskModel {
    * @param name 任务名称
    * @returns 任务id
    */
-  addTask(name: string){
-    return this.rdbStore?.insert(this.tableName, {name, finished: false})
+  addTask(name: string): Promise<number> {
+    if(this.rdbStore) {
+      return this.rdbStore.insert(this.tableName, {name, finished: false})
+    } else {
+      return Promise.resolve(500)
+    }
   }
 
   /**
